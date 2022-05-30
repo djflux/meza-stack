@@ -1,7 +1,9 @@
 FROM meza-rocky8-base:test
 
-RUN yum -y --setopt=tsflags=nodocs update && \
-    yum -y --setopt=tsflags=nodocs install -y \
+RUN dnf -y --setopt=tsflags=nodocs update --exclude=ansible* --exclude=python* && \
+    dnf module reset php && \
+    dnf module -y enable php:7.4 && \
+    dnf -y --setopt=tsflags=nodocs install -y \
     php-bcmath   \
     php-cli      \
     php-common   \
@@ -21,7 +23,7 @@ RUN yum -y --setopt=tsflags=nodocs update && \
     php-soap     \
     php-xml      \
     php-xmlrpc   \
-    && yum clean all
+    && dnf clean all
 
 RUN sed -e 's/127.0.0.1:9000/9000/' \
         -e '/allowed_clients/d' \
