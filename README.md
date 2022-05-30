@@ -3,8 +3,6 @@
 This is a testing ground to getting meza to build an Enterprise Mediawiki
 stack from separate Rocky Linux and other docker containers.
 
-More to come.
-
 # Requirements
 
 To run/test this repo you must have the following installed on your system:
@@ -51,5 +49,27 @@ configured to listen on tcp 9000 and current has no access control restrictions
 as it is assumed that the whole stack will only export necessary ports and the
 rest of the containers can talk to each other on their own `meza` bridge network.
 
-The meza-httpd container is configured to serve PHP via a ServerHandler proxy
+The meza-httpd container is configured to serve PHP via an Apache `ServerHandler` proxy
 that connects by name to the meza-php-fpm container.
+
+# Goals
+
+The eventually goal is to integrate pieces of this repo into meza (https://github.com/enterprisemediawiki/meza). 
+The vision is that each component of the meza stack is its own separate 
+container. We can then rebuild another stack and use the load_balancer to
+test a new SMW/MW/DB or any other component (other than the load_balancer :wink:)
+
+## Changes to meza
+These are the ideas for the docker commands for meza
+
+### `meza docker build all`
+Builds all of the required containers and installed all Enterprise MediaWiki components into the app_server images.
+
+### `meza docker build <component>`
+Rebuilds the specific component docker image (e.g. app_server, database_server, elastic_search_server, etc.)
+
+### `meza docker compose up`
+Starts the meza-stack. Builds the required images if they aren't already in the local docker repo.
+
+Others?
+
