@@ -28,9 +28,6 @@ services:
    meza-php-fpm:
      image: meza-php-fpm:test
 
-     ports:
-       - "9090:9000"
-
      networks:
        - meza
 
