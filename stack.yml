@@ -28,6 +28,9 @@ services:
    meza-php-fpm:
      image: meza-php-fpm:test
 
+     ports:
+       - "9090:9000"
+
      networks:
        - meza
 
@@ -50,7 +53,7 @@ services:
 #       - meza-database
 
      ports:
-       - "8084:80"
+       - "80"
 
      logging:
        driver: syslog
@@ -65,6 +68,9 @@ services:
      volumes:
        - www_data:/var/www/html
        - meza_opt:/opt
+
+     deploy:
+       replicas: 3
 
 
 volumes:
