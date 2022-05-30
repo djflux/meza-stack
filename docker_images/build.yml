@@ -30,3 +30,15 @@
         tag: test
         source: build
         state: present
+
+    - name: Build meza-haproxy
+      docker_image:
+        name: meza-haproxy
+        build:
+          path: /opt/meza-stack/docker_images/meza-haproxy
+          pull: no
+        tag: test
+        source: build
+        state: present
+
+
