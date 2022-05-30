@@ -5,7 +5,7 @@
       docker_image:
         name: meza-rocky8-base
         build:
-          path: /opt/ansible/meza-rocky8-base
+          path: /opt/meza-stack/docker_images/meza-rocky8-base
           pull: yes
         tag: test
         source: build
@@ -15,7 +15,7 @@
       docker_image:
         name: meza-php-fpm
         build:
-          path: /opt/ansible/meza-php-fpm
+          path: /opt/meza-stack/docker_images/meza-php-fpm
           pull: no
         tag: test
         source: build
@@ -25,7 +25,7 @@
       docker_image:
         name: meza-httpd
         build:
-          path: /opt/ansible/meza-httpd
+          path: /opt/meza-stack/docker_images/meza-httpd
           pull: no
         tag: test
         source: build
