@@ -1,9 +1,9 @@
 FROM meza-rocky8-base:test
 MAINTAINER Andy Rechenberg <github@rechenberg.net>
 
-RUN yum -y --setopt=tsflags=nodocs update && \
-    yum -y --setopt=tsflags=nodocs install httpd && \
-    yum clean all
+RUN dnf -y --setopt=tsflags=nodocs update --exclude=ansible* --exclude=python* && \
+    dnf -y --setopt=tsflags=nodocs install httpd && \
+    dnf clean all
 
 EXPOSE 80
 
