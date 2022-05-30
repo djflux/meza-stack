@@ -1,7 +1,7 @@
 FROM rockylinux/rockylinux:8
 MAINTAINER Andy Rechenberg <github@rechenberg.net>
 
-RUN dnf -y --setopt=tsflags=nodocs update && \
+RUN dnf -y --setopt=tsflags=nodocs update --exclude=python* && \
     dnf -y --setopt=tsflags=nodocs install dnf-plugins-core && \
     dnf config-manager --set-enabled powertools && \
     dnf -y --setopt=tsflags=nodocs install epel-release && \
