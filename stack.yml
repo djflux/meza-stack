@@ -53,6 +53,7 @@ services:
 #       - meza-database
 
      ports:
+       - "8080"
        - "80"
 
      logging:
@@ -71,7 +72,26 @@ services:
 
      deploy:
        replicas: 3
+       endpoint_mode: dnsrr
 
+   meza-haproxy:
+     image: meza-haproxy:test
+
+     depends_on:
+       - meza-httpd
+
+     ports:
+       - "80:80"
+
+     logging:
+       driver: syslog
+       options:
+         tag: "{{.ID}}/{{.ImageName}}/{{.Name}} - "
+
+     restart: always
+
+     networks:
+       - meza
 
 volumes:
     meza_opt:
