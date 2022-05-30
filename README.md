@@ -45,6 +45,11 @@ ansible-playbook -i docker_images/inventory.ini docker_images/build.yml
 # What runs right now (30 May 2022)
 
 If everything builds properly and the containers start there should be a running
-web server that can server PHP content.
+web server and php-fpm container running. The web server is listening on :::8084
+which is connected to the meza-httpd:80 container. The meza-php-fpm container is 
+configured to listen on tcp 9000 and current has no access control restrictions
+as it is assumed that the whole stack will only export necessary ports and the
+rest of the containers can talk to each other on their own `meza` bridge network.
 
-More to come ...
+The meza-httpd container is configured to serve PHP via a ServerHandler proxy
+that connects by name to the meza-php-fpm container.
