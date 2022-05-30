@@ -1,27 +1,37 @@
-FROM rockylinux/rockylinux:8
+# Based on CentOS Dockerfile
+#
+# https://github.com/djflux/CentOS-Dockerfiles/blob/master/mariadb/centos7/Dockerfile
+#
+FROM meza-rocky8-base:test
 MAINTAINER Andy Rechenberg <github@rechenberg.net>
 
-RUN dnf -y --setopt=tsflags=nodocs update && \
-    dnf -y --setopt=tsflags=nodocs install dnf-plugins-core && \
-    dnf config-manager --set-enabled powertools && \
-    dnf -y --setopt=tsflags=nodocs install epel-release && \
-    dnf -y --setopt=tsflags=nodocs install centos-release-ansible-29 && \
-    dnf -y --setopt=tsflags=nodocs install \
-        python36 \
-        git \
-        ansible-2.9.27-1.el8.noarch \
-        alternatives && \
-    alternatives --set python /usr/bin/python3 && \
-    dnf -y --setopt=tsflags=nodocs install \
-        mariadb && \
+RUN dnf -y update --exclude=ansible* --exclude=python* && \
+    dnf -y install --setopt=tsflags=nodocs \
+       mariadb-server \
+       bind-utils \
+       pwgen \
+       psmisc \
+       hostname \
+       findutils && \ 
+    dnf -y erase vim-minimal && \
     dnf clean all
 
-EXPOSE 80
+# Fix permissions to allow for running on openshift
+COPY fix-permissions.sh /
+RUN /fix-permissions.sh /var/lib/mysql/   && \
+    /fix-permissions.sh /var/log/mariadb/ && \
+    /fix-permissions.sh /var/run/
 
-# Simple startup script to avoid some issues observed with container restart
-#ADD run-httpd.sh /run-httpd.sh
-#ADD php.conf.meza /etc/httpd/conf.d/php.conf
-#ADD flux.php /var/www/html/flux.php
-#RUN chmod -v +x /run-httpd.sh
+COPY docker-entrypoint.sh /
 
-#CMD ["/run-httpd.sh"]
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+# Place VOLUME statement below all changes to /var/lib/mysql
+#VOLUME /var/lib/mysql
+
+# By default will run as random user on openshift and the mysql user (27)
+# everywhere else
+USER 27
+
+EXPOSE 3306
+CMD ["mysqld_safe"]
