@@ -1,0 +1,83 @@
+# Stack for enterprisemediawiki based on meza
+#
+version: '3'
+
+services:
+#   database-meza:
+#     image: mariadb:10.8
+#
+#       volumes:
+#         - meza_opt:/opt
+#
+#       restart: always
+#
+#       networks:
+#         - meza
+#
+#       logging:
+#         driver: syslog
+#         options:
+#           tag: "{{.ID}}/{{.ImageName}}/{{.Name}} - "
+#
+#       environment:
+#         MYSQL_ROOT_PASSWORD: password
+#         MYSQL_USER: wiki_app_user
+#         MYSQL_PASSWORD: password
+
+
+   meza-php-fpm:
+     image: meza-php-fpm:test
+
+     ports:
+       - "9090:9000"
+
+     networks:
+       - meza
+
+     restart: always
+
+     volumes:
+       - www_data:/var/www/html
+       - meza_opt:/opt
+
+     logging:
+       driver: syslog
+       options:
+         tag: "{{.ID}}/{{.ImageName}}/{{.Name}} - "
+
+   meza-httpd:
+     image: meza-httpd:test
+
+     depends_on:
+       - meza-php-fpm
+#       - meza-database
+
+     ports:
+       - "8084:80"
+
+     logging:
+       driver: syslog
+       options:
+         tag: "{{.ID}}/{{.ImageName}}/{{.Name}} - "
+
+     restart: always
+
+     networks:
+       - meza
+
+     volumes:
+       - www_data:/var/www/html
+       - meza_opt:/opt
+
+
+volumes:
+    meza_opt:
+
+    www_data:
+
+networks:
+    meza:
+        driver: bridge
+
+# vim: sw=4 ts=2:et:
+

@@ -1,0 +1,32 @@
+---
+- hosts: build_host
+  tasks:
+    - name: Build meza-rocky8-base
+      docker_image:
+        name: meza-rocky8-base
+        build:
+          path: /opt/ansible/meza-rocky8-base
+          pull: yes
+        tag: test
+        source: build
+        state: present
+
+    - name: Build meza-php-fpm
+      docker_image:
+        name: meza-php-fpm
+        build:
+          path: /opt/ansible/meza-php-fpm
+          pull: no
+        tag: test
+        source: build
+        state: present
+
+    - name: Build meza-httpd
+      docker_image:
+        name: meza-httpd
+        build:
+          path: /opt/ansible/meza-httpd
+          pull: no
+        tag: test
+        source: build
+        state: present

@@ -1,0 +1,76 @@
+[client]
+#password = your_password
+port = 3306
+socket = /var/lib/mysql/mysql.sock
+
+[mysqld]
+port = 3306
+bind-address = 0.0.0.0
+datadir = /opt/data-meza/mariadb
+socket = /var/lib/mysql/mysql.sock
+pid-file = /var/run/mariadb/mariadb.pid
+
+# Logging configuration.
+log-error = /var/log/mariadb/mariadb.log
+
+# Slow query log configuration.
+slow_query_log = 1
+slow_query_log_file = /var/log/mariadb/slow-queries.log
+long_query_time = 5
+
+# Replication
+server-id = 1
+
+log_bin = mysql-bin
+log-bin-index = mysql-bin.index
+expire_logs_days = 2
+max_binlog_size = 100M
+binlog_format = ROW
+
+
+
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links = 0
+
+# User is ignored when systemd is used (fedora >= 15).
+user = mysql
+
+performance_schema = on
+
+# Memory settings.
+key_buffer_size = 256M
+max_allowed_packet = 64M
+table_open_cache = 256
+sort_buffer_size = 1M
+read_buffer_size = 1M
+read_rnd_buffer_size = 4M
+myisam_sort_buffer_size = 64M
+thread_cache_size = 8
+query_cache_size = 16M
+query_cache_limit = 1M
+max_connections = 151
+tmp_table_size = 16M
+max_heap_table_size = 16M
+
+# Other settings.
+wait_timeout = 28800
+lower_case_table_names = 0
+
+# InnoDB settings.
+innodb_large_prefix = 1
+innodb_file_format = barracuda
+innodb_file_per_table = 1
+innodb_buffer_pool_size = 256M
+innodb_log_file_size = 64M
+innodb_log_buffer_size = 8M
+innodb_flush_log_at_trx_commit = 1
+innodb_lock_wait_timeout = 50
+
+[mysqldump]
+quick
+max_allowed_packet = 64M
+
+[mysqld_safe]
+pid-file = /var/run/mariadb/mariadb.pid
+
+
