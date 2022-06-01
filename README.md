@@ -40,17 +40,35 @@ ansible-playbook -i docker_images/inventory.ini docker_images/build.yml
 /usr/libexec/docker/cli-plugins/docker-compose -f stack.yml up -d
 ```
 
-# What runs right now (30 May 2022)
+# What runs right now (01 June 2022)
 
-If everything builds properly and the containers start there should be a running
-web server and php-fpm container running. The web server is listening on :::8084
-which is connected to the meza-httpd:80 container. The meza-php-fpm container is 
-configured to listen on tcp 9000 and current has no access control restrictions
-as it is assumed that the whole stack will only export necessary ports and the
-rest of the containers can talk to each other on their own `meza` bridge network.
+If everything builds properly and the containers start there should be haproxy,
+Apache web server, and php-fpm (7.4) containers running. The stack.yml file
+currently starts (3) `meza-httpd` replicas. Running `docker ps` should result
+in something like the followin (container IDs and ephemeral TCP ports will be
+different):
 
-The meza-httpd container is configured to serve PHP via an Apache `ServerHandler` proxy
-that connects by name to the meza-php-fpm container.
+```
+CONTAINER ID   IMAGE               COMMAND                  CREATED        STATUS        PORTS                                                                                  NAMES
+df6fdba6f7b2   meza-haproxy:test   "/docker-entrypoint.…"   42 hours ago   Up 42 hours   0.0.0.0:80->80/tcp, :::80->80/tcp                                                      meza-stack-meza-haproxy-1
+405d591a8d4d   meza-httpd:test     "/run-httpd.sh"          42 hours ago   Up 42 hours   0.0.0.0:49228->80/tcp, :::49228->80/tcp, 0.0.0.0:49226->8080/tcp, :::49226->8080/tcp   meza-stack-meza-httpd-3
+fec4f0f74b67   meza-httpd:test     "/run-httpd.sh"          42 hours ago   Up 42 hours   0.0.0.0:49229->80/tcp, :::49229->80/tcp, 0.0.0.0:49227->8080/tcp, :::49227->8080/tcp   meza-stack-meza-httpd-1
+c84afbf40801   meza-httpd:test     "/run-httpd.sh"          42 hours ago   Up 42 hours   0.0.0.0:49231->80/tcp, :::49231->80/tcp, 0.0.0.0:49230->8080/tcp, :::49230->8080/tcp   meza-stack-meza-httpd-2
+f7472154c59f   meza-php-fpm:test   "/bin/sh -c '/usr/sb…"   42 hours ago   Up 42 hours   0.0.0.0:9090->9000/tcp, :::9090->9000/tcp                                              meza-stack-meza-php-fpm-1
+```
+
+There is an haproxy continaer listening on port 80. The haproxy backend is configured with 
+`server-template` so that can server requests from up to six (6) meza-httpd
+Apache containers and forward them to `meza-httpd:8080` by name using docker DNS. 
+Since standard meza serves files from `/opt/docs` there is a `meza-mw.conf` file
+placed into the `/etc/httpd/conf.d/` directory inside the container upon build. 
+This file configures a `VirtualHost` that is listening on *:8080 and serving
+files from `/opt/htdocs`.
+
+The `meza-httpd` images is configured to serve PHP via an Apache `ServerHandler` proxy
+that connects by name to `meza-php-fpm:9000`
+
+All communication between containers happens internally on docker network `meza`.
 
 # Goals
 
