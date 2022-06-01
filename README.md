@@ -40,6 +40,13 @@ ansible-playbook -i docker_images/inventory.ini docker_images/build.yml
 /usr/libexec/docker/cli-plugins/docker-compose -f stack.yml up -d
 ```
 
+
+> **If there a service already listening on tcp/80 then the `docker-compose` 
+> command will fail. Modify the `ports` section of `meza-httpd` in the `stack.yml`
+> file to use ports that are available on your container host. Also make sure
+> to open the appropriate firewall ports that you specify. ALWAYS check with 
+> your IT admin before opening firewall ports :wink: **
+
 # What runs right now (01 June 2022)
 
 If everything builds properly and the containers start there should be haproxy,
@@ -57,16 +64,20 @@ c84afbf40801   meza-httpd:test     "/run-httpd.sh"          42 hours ago   Up 42
 f7472154c59f   meza-php-fpm:test   "/bin/sh -c '/usr/sb…"   42 hours ago   Up 42 hours   0.0.0.0:9090->9000/tcp, :::9090->9000/tcp                                              meza-stack-meza-php-fpm-1
 ```
 
-There is an haproxy continaer listening on port 80. The haproxy backend is configured with 
-`server-template` so that can server requests from up to six (6) meza-httpd
-Apache containers and forward them to `meza-httpd:8080` by name using docker DNS. 
-Since standard meza serves files from `/opt/docs` there is a `meza-mw.conf` file
-placed into the `/etc/httpd/conf.d/` directory inside the container upon build. 
-This file configures a `VirtualHost` that is listening on *:8080 and serving
-files from `/opt/htdocs`.
+There is an haproxy container listening on port 80 on the docker host 
 
-The `meza-httpd` images is configured to serve PHP via an Apache `ServerHandler` proxy
-that connects by name to `meza-php-fpm:9000`
+> **The stack will fail to start with a `docker-compose up` command if there is 
+> something already listening on tcp/80.**
+
+The haproxy backend is configured with `server-template` so that can server
+requests from up to six (6) meza-httpd Apache containers and forward them to
+`meza-httpd:8080` by name using docker DNS. Since standard meza serves files
+from `/opt/docs` there is a `meza-mw.conf` file placed into the `/etc/httpd/conf.d/`
+directory inside the container upon build. This file configures a `VirtualHost`
+that is listening on *:8080 and serving files from `/opt/htdocs`.
+
+The `meza-httpd` images is configured to serve PHP via an Apache `ServerHandler`
+proxy that connects by name to `meza-php-fpm:9000`
 
 All communication between containers happens internally on docker network `meza`.
 
