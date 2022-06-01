@@ -45,7 +45,7 @@ ansible-playbook -i docker_images/inventory.ini docker_images/build.yml
 > command will fail. Modify the `ports` section of `meza-httpd` in the `stack.yml`
 > file to use ports that are available on your container host. Also make sure
 > to open the appropriate firewall ports that you specify. ALWAYS check with 
-> your IT admin before opening firewall ports :wink: **
+> your IT admin before opening firewall ports :wink:**
 
 # What runs right now (01 June 2022)
 
